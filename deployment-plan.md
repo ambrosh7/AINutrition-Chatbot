@@ -77,7 +77,7 @@ If you use that alternative, set an absolute `DATABASE_URL` (and accept that def
 
 ### 2. Runtime dependencies
 
-`backend/requirements.txt` is what Railway installs. It currently includes `pytest` and `httpx` (test stack). That is fine for a prototype. Optional cleanup before deploy: split to `requirements.txt` (runtime) and `requirements-dev.txt` (tests) so Railway does not install pytest. Not a blocker.
+`backend/requirements.txt` is what Railway installs (runtime only). Local/tests use `backend/requirements-dev.txt`. Do **not** put a root `requirements.txt` in the monorepo — Vercel will detect Python at the repo root and fail with “No python entrypoint found” if Root Directory is not set to `web`.
 
 Runtime packages that must be present:
 
@@ -223,8 +223,8 @@ This is a **Vite + React + TypeScript** app, not a plain static folder. Vercel m
 
 1. New project → import the **same** GitHub repo.
 2. Framework preset: **Vite** (or Other with the settings below).
-3. Root directory: `web`.
-4. In Root Directory settings, turn **off** “Include files outside the root directory in the Build Step” if Vercel tries to install root/backend Python deps. The install must be `web/package.json` only.
+3. Root directory: **`web`**. If this stays empty / repo root, Vercel treats the monorepo as Python (sees `backend/`, `tests/conftest.py`) and errors with `No python entrypoint found`.
+4. In Root Directory settings, turn **off** “Include files outside the root directory in the Build Step”. The install must be `web/package.json` only.
 5. Build settings:
 
 | Setting | Value |

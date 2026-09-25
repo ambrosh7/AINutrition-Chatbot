@@ -1,3 +1,0 @@
-# Shim for Nixpacks Python detection. Railway installs via railway.toml
-# buildCommand → backend/requirements.txt (runtime only).
--r backend/requirements.txt

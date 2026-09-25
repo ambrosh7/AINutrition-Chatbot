@@ -67,7 +67,11 @@ Full steps: [deployment-plan.md](./deployment-plan.md). Short path:
 1. Push this monorepo to GitHub (never commit `.env`).
 2. **Railway** — new service from the repo root. Uses root `railway.toml` / `nixpacks.toml`. Set variables from `.env.example` (`GROQ_API_KEY` required for chat). Confirm `GET /health` on the public Railway URL.
 3. Edit `web/vercel.json`: replace `REPLACE_WITH_RAILWAY_URL` with the Railway host (no `https://` strip — keep the full `https://….up.railway.app` in each destination). Commit and push.
-4. **Vercel** — import the same repo, Root Directory `web`, build `npm run build`, output `dist`. Do **not** set `VITE_API_BASE` or `GROQ_API_KEY` on Vercel.
+4. **Vercel** — import the same repo with these project settings (required):
+   - **Root Directory:** `web` (not the repo root — otherwise Vercel scans Python files and fails looking for an entrypoint)
+   - Include files outside the root directory in the Build Step: **Off**
+   - Framework: Vite · Build: `npm run build` · Output: `dist`
+   - Do **not** set `VITE_API_BASE` or `GROQ_API_KEY` on Vercel
 5. Open the Vercel URL; chat should round-trip via same-origin `/api/*` rewrites.
 
 Public entry point is the Vercel URL (Stitch clinical UI in `web/`). Do not deploy `stitch_ai_nutrition_assistant_ui/`.
