@@ -1,0 +1,8 @@
+{
+  "name": "ai-nutrition-chatbot",
+  "private": true,
+  "scripts": {
+    "build": "npm run build --prefix web",
+    "install:web": "npm install --prefix web"
+  }
+}
