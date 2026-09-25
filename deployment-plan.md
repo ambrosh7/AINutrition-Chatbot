@@ -51,38 +51,22 @@ Then continue below.
 
 Prefer **repo root as the Railway service root** so `app.config.REPO_ROOT` (two levels above `backend/app/config.py`) still resolves to the monorepo root and `data/app.db` / `data/groq-usage.json` land in the expected place.
 
-Root `railway.toml` / `nixpacks.toml` (already in repo) install with `python -m pip` after Nixpacks provisions Python 3.11. Do not use a bare `pip install …` `buildCommand` — Railway’s image may not have `pip` on PATH yet.
+Root `Dockerfile` + `railway.toml` (`builder = "DOCKERFILE"`) are the supported Railway path. Nixpacks is optional fallback only.
 
 ```toml
 [build]
-builder = "NIXPACKS"
-nixpacksConfigPath = "nixpacks.toml"
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile"
 
 [deploy]
-startCommand = "uvicorn app.main:create_app --factory --app-dir backend --host 0.0.0.0 --port $PORT"
 healthcheckPath = "/health"
 healthcheckTimeout = 30
 restartPolicyType = "ON_FAILURE"
 ```
 
-`--app-dir backend` puts `app` on the import path while the process working directory stays the repo root.
+The image runs:
 
-Pin Python 3.11+ (Nixpacks): add a root `.python-version` with `3.11`, or set Railway variable `NIXPACKS_PYTHON_VERSION=3.11`. Do not point Railway at `.venv`.
-
-**Alternative:** set Railway Root Directory to `backend/` and use:
-
-```toml
-[build]
-builder = "NIXPACKS"
-
-[deploy]
-startCommand = "uvicorn app.main:create_app --factory --host 0.0.0.0 --port $PORT"
-healthcheckPath = "/health"
-healthcheckTimeout = 30
-restartPolicyType = "ON_FAILURE"
-```
-
-If you use that alternative, set an absolute `DATABASE_URL` (and accept that default `REPO_ROOT`-relative `data/` paths may not match the monorepo layout). Prefer the repo-root service layout above.
+`uvicorn app.main:create_app --factory --app-dir backend --host 0.0.0.0 --port $PORT`
 
 ### 2. Runtime dependencies
 

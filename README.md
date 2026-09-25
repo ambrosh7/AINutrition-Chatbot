@@ -74,7 +74,7 @@ You do **not** need Hobby:
 
 ### API on Railway
 
-1. Deploy from GitHub → `ambrosh7/AINutrition-Chatbot` (repo root; uses `railway.toml`).
+1. Deploy from GitHub → `ambrosh7/AINutrition-Chatbot` (repo root; uses `Dockerfile` via `railway.toml`).
 2. Variables: from `.env.example`; set real `GROQ_API_KEY`.
 3. **Settings → Networking → Generate Domain**.
 4. Confirm `GET https://YOUR-SERVICE.up.railway.app/health` → `{"status":"ok"}`.
