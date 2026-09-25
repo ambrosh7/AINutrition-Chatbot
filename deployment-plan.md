@@ -51,12 +51,12 @@ Then continue below.
 
 Prefer **repo root as the Railway service root** so `app.config.REPO_ROOT` (two levels above `backend/app/config.py`) still resolves to the monorepo root and `data/app.db` / `data/groq-usage.json` land in the expected place.
 
-Root `railway.toml` (already in repo):
+Root `railway.toml` / `nixpacks.toml` (already in repo) install with `python -m pip` after Nixpacks provisions Python 3.11. Do not use a bare `pip install …` `buildCommand` — Railway’s image may not have `pip` on PATH yet.
 
 ```toml
 [build]
 builder = "NIXPACKS"
-buildCommand = "pip install -r backend/requirements.txt"
+nixpacksConfigPath = "nixpacks.toml"
 
 [deploy]
 startCommand = "uvicorn app.main:create_app --factory --app-dir backend --host 0.0.0.0 --port $PORT"
