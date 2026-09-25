@@ -6,7 +6,7 @@ See [problemStatement.md](./problemStatement.md), [architecture.md](./architectu
 
 ## Status
 
-Phase 7 coding ready — Railway + Vercel config in-repo. Public deploy still needs a GitHub remote, Railway env secrets, and the real Railway host pasted into `web/vercel.json`.
+Phase 7 coding ready — **Railway (API) + Vercel (frontend)**. If Railway shows “Free plan resource provision limit exceeded”, delete unused projects first (no Hobby upgrade required).
 
 ## Requirements
 
@@ -64,17 +64,27 @@ curl -s -X POST http://127.0.0.1:8000/api/chat \
 
 Full steps: [deployment-plan.md](./deployment-plan.md). Short path:
 
-1. Push this monorepo to GitHub (never commit `.env`).
-2. **Railway** — new service from the repo root. Uses root `railway.toml` / `nixpacks.toml`. Set variables from `.env.example` (`GROQ_API_KEY` required for chat). Confirm `GET /health` on the public Railway URL.
-3. Edit `web/vercel.json`: replace `REPLACE_WITH_RAILWAY_URL` with the Railway host (no `https://` strip — keep the full `https://….up.railway.app` in each destination). Commit and push.
-4. **Vercel** — import the same repo with these project settings (required):
-   - **Root Directory:** `web` (not the repo root — otherwise Vercel scans Python files and fails looking for an entrypoint)
-   - Include files outside the root directory in the Build Step: **Off**
-   - Framework: Vite · Build: `npm run build` · Output: `dist`
-   - Do **not** set `VITE_API_BASE` or `GROQ_API_KEY` on Vercel
-5. Open the Vercel URL; chat should round-trip via same-origin `/api/*` rewrites.
+### Free Railway quota (if upgrade popup appears)
 
-Public entry point is the Vercel URL (Stitch clinical UI in `web/`). Do not deploy `stitch_ai_nutrition_assistant_ui/`.
+You do **not** need Hobby:
+
+1. Railway → **Projects**
+2. Open an unused project → **Settings** → **Delete project**
+3. Or reuse a project: **Add service** → GitHub → this repo (instead of New Project)
+
+### API on Railway
+
+1. Deploy from GitHub → `ambrosh7/AINutrition-Chatbot` (repo root; uses `railway.toml`).
+2. Variables: from `.env.example`; set real `GROQ_API_KEY`.
+3. **Settings → Networking → Generate Domain**.
+4. Confirm `GET https://YOUR-SERVICE.up.railway.app/health` → `{"status":"ok"}`.
+
+### Wire Vercel
+
+1. Replace `REPLACE_WITH_RAILWAY_URL` in **both** `vercel.json` and `web/vercel.json` (keep `https://`).
+2. Push `main` and redeploy Vercel (Root Directory `web`). Do **not** set `VITE_API_BASE` or `GROQ_API_KEY` on Vercel.
+
+Public entry point is the Vercel URL. Do not deploy `stitch_ai_nutrition_assistant_ui/`.
 
 ## Prompt eval
 
