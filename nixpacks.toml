@@ -1,0 +1,3 @@
+# Prefer the Python provider only. The monorepo also has web/package.json;
+# Railway must not treat this service as a Node app.
+providers = ["python"]
