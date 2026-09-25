@@ -86,7 +86,9 @@ If you use that alternative, set an absolute `DATABASE_URL` (and accept that def
 
 ### 2. Runtime dependencies
 
-`backend/requirements.txt` is what Railway installs (runtime only). Local/tests use `backend/requirements-dev.txt`. Do **not** put a root `requirements.txt` in the monorepo — Vercel will detect Python at the repo root and fail with “No python entrypoint found” if Root Directory is not set to `web`.
+`backend/requirements.txt` is what the API installs (runtime only). Local/tests use `backend/requirements-dev.txt`.
+
+A thin root `requirements.txt` (`-r backend/requirements.txt`) exists so Railway/Nixpacks detects Python. Vercel must use Root Directory **`web`** (or the root `vercel.json` Vite config) so it does not treat the monorepo as a Python serverless app.
 
 Runtime packages that must be present:
 

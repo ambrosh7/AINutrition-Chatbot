@@ -1,3 +1,11 @@
-# Prefer the Python provider only. The monorepo also has web/package.json;
-# Railway must not treat this service as a Node app.
+# Python-only provider. Ignore root package.json (that is for Vercel).
 providers = ["python"]
+
+[variables]
+NIXPACKS_PYTHON_VERSION = "3.11"
+
+[phases.setup]
+nixPkgs = ["python311", "gcc"]
+
+[phases.install]
+cmds = ["python -m pip install --upgrade pip", "python -m pip install -r backend/requirements.txt"]
