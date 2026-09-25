@@ -6,11 +6,11 @@
   "rewrites": [
     {
       "source": "/health",
-      "destination": "https://REPLACE_WITH_RAILWAY_URL/health"
+      "destination": "https://ai-nutrition-api-production.up.railway.app/health"
     },
     {
       "source": "/api/:path*",
-      "destination": "https://REPLACE_WITH_RAILWAY_URL/api/:path*"
+      "destination": "https://ai-nutrition-api-production.up.railway.app/api/:path*"
     },
     {
       "source": "/(.*)",
