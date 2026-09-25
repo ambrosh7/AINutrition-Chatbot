@@ -15,4 +15,5 @@ RUN chmod +x /app/start.sh && mkdir -p /app/data
 
 EXPOSE 8000
 
-CMD ["/app/start.sh"]
+# Explicit sh so Railway never treats the script as a raw argv list.
+CMD ["sh", "/app/start.sh"]
