@@ -40,6 +40,14 @@ class Settings:
     history_message_limit: int
 
 
+def _env(name: str, default: str) -> str:
+    """Read env var; treat missing or blank as default (Railway UI often stores empty strings)."""
+    value = os.getenv(name)
+    if value is None or not value.strip():
+        return default
+    return value.strip()
+
+
 def _split_origins(raw: str) -> tuple[str, ...]:
     parts = [part.strip() for part in raw.split(",")]
     return tuple(part for part in parts if part)
@@ -61,24 +69,22 @@ def _resolve_database_url(raw: str) -> str:
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    model = os.getenv("GROQ_MODEL", DEFAULT_GROQ_MODEL).strip()
+    model = _env("GROQ_MODEL", DEFAULT_GROQ_MODEL)
     return Settings(
-        model_provider=os.getenv("MODEL_PROVIDER", "groq").strip().lower(),
-        groq_api_key=os.getenv("GROQ_API_KEY", "").strip(),
+        model_provider=_env("MODEL_PROVIDER", "groq").lower(),
+        groq_api_key=_env("GROQ_API_KEY", ""),
         groq_model=model,
-        groq_api_base_url=os.getenv(
-            "GROQ_API_BASE_URL", DEFAULT_GROQ_BASE_URL
-        ).strip().rstrip("/"),
-        temperature=float(os.getenv("TEMPERATURE", "0.2")),
-        database_url=_resolve_database_url(
-            os.getenv("DATABASE_URL", f"sqlite:///./data/app.db")
+        groq_api_base_url=_env("GROQ_API_BASE_URL", DEFAULT_GROQ_BASE_URL).rstrip(
+            "/"
         ),
-        prompt_version=os.getenv("PROMPT_VERSION", "m1-v1").strip(),
+        temperature=float(_env("TEMPERATURE", "0.2")),
+        database_url=_resolve_database_url(_env("DATABASE_URL", "sqlite:///./data/app.db")),
+        prompt_version=_env("PROMPT_VERSION", "m1-v1"),
         allowed_origins=_split_origins(
-            os.getenv(
+            _env(
                 "ALLOWED_ORIGINS",
                 "http://localhost:5173,http://127.0.0.1:5173",
             )
         ),
-        history_message_limit=int(os.getenv("HISTORY_MESSAGE_LIMIT", "20")),
+        history_message_limit=int(_env("HISTORY_MESSAGE_LIMIT", "20")),
     )

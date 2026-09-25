@@ -10,7 +10,9 @@ RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 
 COPY backend/ /app/backend/
 COPY data/ /app/data/
+COPY start.sh /app/start.sh
+RUN chmod +x /app/start.sh && mkdir -p /app/data
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "uvicorn app.main:create_app --factory --app-dir backend --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["/app/start.sh"]
