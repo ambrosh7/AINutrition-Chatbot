@@ -6,11 +6,11 @@
   "rewrites": [
     {
       "source": "/health",
-      "destination": "https://REPLACE_WITH_RAILWAY_URL/health"
+      "destination": "https://REPLACE_WITH_RENDER_URL/health"
     },
     {
       "source": "/api/:path*",
-      "destination": "https://REPLACE_WITH_RAILWAY_URL/api/:path*"
+      "destination": "https://REPLACE_WITH_RENDER_URL/api/:path*"
     },
     {
       "source": "/(.*)",

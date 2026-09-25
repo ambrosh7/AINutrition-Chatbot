@@ -6,7 +6,7 @@ See [problemStatement.md](./problemStatement.md), [architecture.md](./architectu
 
 ## Status
 
-Phase 7 coding ready — Railway + Vercel config in-repo. Public deploy still needs a GitHub remote, Railway env secrets, and the real Railway host pasted into `web/vercel.json`.
+Phase 7 coding ready — **Render** (API) + **Vercel** (frontend). Paste the live Render host into both `vercel.json` files after the API is up.
 
 ## Requirements
 
@@ -58,20 +58,21 @@ curl -s -X POST http://127.0.0.1:8000/api/chat \
 ## Storage
 
 - Local default: SQLite at `data/app.db` (created on first start). The file is gitignored.
-- Railway: without a volume, SQLite history resets on redeploy. Optional: attach a volume and set `DATABASE_URL=sqlite:////data/app.db`, or use a Postgres `DATABASE_URL`.
+- Render: without a persistent disk, SQLite history resets on redeploy. Optional: persistent disk or Postgres `DATABASE_URL`. Free-tier services sleep when idle — wake `/health` before demos.
 
-## Deploy (Railway + Vercel)
+## Deploy (Render + Vercel)
 
 Full steps: [deployment-plan.md](./deployment-plan.md). Short path:
 
 1. Push this monorepo to GitHub (never commit `.env`).
-2. **Railway** — new service from the repo root. Uses root `railway.toml` / `nixpacks.toml`. Set variables from `.env.example` (`GROQ_API_KEY` required for chat). Confirm `GET /health` on the public Railway URL.
-3. Edit `web/vercel.json`: replace `REPLACE_WITH_RAILWAY_URL` with the Railway host (no `https://` strip — keep the full `https://….up.railway.app` in each destination). Commit and push.
-4. **Vercel** — import the same repo with these project settings (required):
-   - **Root Directory:** `web` (not the repo root — otherwise Vercel scans Python files and fails looking for an entrypoint)
-   - Include files outside the root directory in the Build Step: **Off**
-   - Framework: Vite · Build: `npm run build` · Output: `dist`
-   - Do **not** set `VITE_API_BASE` or `GROQ_API_KEY` on Vercel
+2. **Render** — New → Blueprint (`render.yaml`) or Web Service from repo root.
+   - Build: `pip install -r backend/requirements.txt`
+   - Start: `uvicorn app.main:create_app --factory --app-dir backend --host 0.0.0.0 --port $PORT`
+   - Health: `/health`
+   - Set `GROQ_API_KEY` (and other vars from `.env.example`)
+   - Confirm `GET https://YOUR-SERVICE.onrender.com/health` → `{"status":"ok"}`
+3. Replace `REPLACE_WITH_RENDER_URL` in **both** `vercel.json` and `web/vercel.json` with your Render host (keep `https://`). Commit and push.
+4. **Vercel** — Root Directory `web` (or rely on root `vercel.json`). Do **not** set `VITE_API_BASE` or `GROQ_API_KEY`.
 5. Open the Vercel URL; chat should round-trip via same-origin `/api/*` rewrites.
 
 Public entry point is the Vercel URL (Stitch clinical UI in `web/`). Do not deploy `stitch_ai_nutrition_assistant_ui/`.
@@ -100,7 +101,7 @@ pytest -q
 | Variable | Purpose |
 | --- | --- |
 | `MODEL_PROVIDER` | `groq` |
-| `GROQ_API_KEY` | Groq API key (Railway only) |
+| `GROQ_API_KEY` | Groq API key (**Render** only) |
 | `GROQ_API_BASE_URL` | Default `https://api.groq.com/openai/v1` |
 | `GROQ_MODEL` | `openai/gpt-oss-120b` (default) or `qwen/qwen3.6-27b` |
 | `TEMPERATURE` | Default `0.2` |

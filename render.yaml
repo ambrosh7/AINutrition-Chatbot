@@ -1,0 +1,36 @@
+# Render Blueprint — API only. Frontend stays on Vercel.
+# Dashboard: New → Blueprint → this repo, or create a Web Service manually
+# using the same build/start commands below.
+
+services:
+  - type: web
+    name: ai-nutrition-api
+    runtime: python
+    plan: free
+    region: oregon
+    rootDir: .
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: uvicorn app.main:create_app --factory --app-dir backend --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: MODEL_PROVIDER
+        value: groq
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GROQ_API_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: TEMPERATURE
+        value: "0.2"
+      - key: DATABASE_URL
+        value: sqlite:///./data/app.db
+      - key: PROMPT_VERSION
+        value: m1-v2
+      - key: ALLOWED_ORIGINS
+        value: ""
+      - key: HISTORY_MESSAGE_LIMIT
+        value: "20"
